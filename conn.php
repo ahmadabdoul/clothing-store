@@ -5,3 +5,4 @@ $db = new Database();
 $conn = $db->getConnection();
 
 echo "Connected successfully";
+
