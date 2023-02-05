@@ -1,4 +1,6 @@
 <?php
+require_once 'Database.php';
+require_once 'Login.php';
 
 class Wishlist {
     private $db;
@@ -18,12 +20,9 @@ class Wishlist {
             $stmt->bind_param("ii", $user_id, $product_id);
             $stmt->execute();
         } else {
-            $wishlist = json_decode($_COOKIE['wishlist'], true);
-            if (!$wishlist) {
-                $wishlist = array();
-            }
+            $wishlist = isset($_COOKIE['wishlist']) ? json_decode($_COOKIE['wishlist'], true) : array();
             $wishlist[] = $product_id;
-            setcookie("wishlist", json_encode($wishlist), time() + (86400 * 30), "/");
+            setcookie("wishlist", json_encode($wishlist), time() + (86400 * 30));
         }
     }
 
@@ -63,4 +62,28 @@ class Wishlist {
             setcookie("wishlist", json_encode($wishlist), time() + (86400 * 30), "/");
         }
     }
+
+    public function isProductInWishlist($product_id) {
+        if ($this->login->isLoggedIn()) {
+            $user_id = $this->login->getUserId();
+            $conn = $this->db->getConnection();
+            $query = "SELECT * FROM wishlist WHERE user_id = ? AND product_id = ?";
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param("ii", $user_id, $product_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result->num_rows > 0) {
+                return true;
+            }
+        } else {
+            if (isset($_COOKIE['wishlist'])) {
+                $wishlist = json_decode($_COOKIE['wishlist'], true);
+                return in_array($product_id, $wishlist);
+            } else {
+                return false;
+            }
+        }
+        
+    }
+    
 }    

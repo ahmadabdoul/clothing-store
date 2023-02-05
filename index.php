@@ -2,6 +2,7 @@
 
 include_once 'header.php';
 include_once 'classes/Category.php';
+include_once 'classes/Wishlist.php';
 
 ?>
 
@@ -47,6 +48,7 @@ include_once 'classes/Category.php';
                                                 <ul class="nice-scroll">
                                                     <li><a href="index.php">All</a></li>
                                                 <?php
+                                         $wishlist = new Wishlist();
                                         $category = new Category();
                                         $categories = $category->getCategoriesWithCount();
                                          foreach ($categories as $cat) {
@@ -113,7 +115,16 @@ include_once 'classes/Category.php';
                                 <div class="product__item__pic set-bg" data-setbg="<?php echo $row['image']; ?>">
                                     <span class="label">Sale</span>
                                     <ul class="product__hover">
-                                        <li><a href="add-to-wishlist.php?product=<?php echo $row['product_id']; ?>"><img src="img/icon/heart.png" alt=""></a></li>
+                                        <?php
+                                        if (!$wishlist->isProductInWishlist($row['product_id'])) {
+                                          
+                                            // product is not in wishlist
+
+                                            ?>
+                                            <li><a href="add-to-wishlist.php?product=<?php echo $row['product_id']; ?>"><img src="img/icon/heart.png" alt=""></a></li>
+                                      <?php
+                                        }
+                                        ?>
                                         
                                     </ul>
                                 </div>
