@@ -3,6 +3,7 @@
 include_once 'header.php';
 include_once 'classes/Category.php';
 include_once 'classes/Wishlist.php';
+include_once 'classes/ShoppingCart.php';
 
 ?>
 
@@ -49,6 +50,7 @@ include_once 'classes/Wishlist.php';
                                                     <li><a href="index.php">All</a></li>
                                                 <?php
                                          $wishlist = new Wishlist();
+                                        $ShoppingCart = new ShoppingCart();
                                         $category = new Category();
                                         $categories = $category->getCategoriesWithCount();
                                          foreach ($categories as $cat) {
@@ -130,9 +132,19 @@ include_once 'classes/Wishlist.php';
                                 </div>
                                 <div class="product__item__text">
                                     <h6><?php echo $row['name']; ?></h6>
-                                    <a href="#" class="add-cart">+ Add To Cart</a>
+
+                                    <?php
+                                        if ($ShoppingCart->isProductInCart($row['product_id'])) {
+                                            ?>
+                                            <a href="add-to-cart.php?product=<?php echo $row['product_id']; ?>" class="add-cart">+ Add To Cart</a>
+                                            
+                                            <?php
                                     
-                                   
+                                        } else {
+                                            ?>
+                                            <a href="remove-from-cart.php?product=<?php echo $row['product_id']; ?>" class="add-cart">- Remove To Cart</a>
+                                            <?php
+                                        } ?>
                                     <h5>N<?php echo $row['price']; ?></h5>
                                  
                                 </div>

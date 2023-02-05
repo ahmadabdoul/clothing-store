@@ -1,5 +1,5 @@
 <?php
-require_once 'classes/Wishlist.php';
+require_once 'classes/ShoppingCart.php';
 
 if (!isset($_GET['product'])) {
     die("Error: No product id provided.");
@@ -7,7 +7,7 @@ if (!isset($_GET['product'])) {
 
 $product_id = $_GET['product'];
 
-$wishlist = new Wishlist();
-$wishlist->removeWishlist($product_id);
+$wishlist = new ShoppingCart();
+$wishlist->removeCart($product_id);
 
 header("Location: index.php");
