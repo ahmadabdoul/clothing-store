@@ -1,0 +1,66 @@
+<?php
+
+class Wishlist {
+    private $db;
+    private $login;
+
+    public function __construct() {
+        $this->db = new Database();
+        $this->login = new Login();
+    }
+
+    public function addWishlist($product_id) {
+        if ($this->login->isLoggedIn()) {
+            $user_id = $this->login->getUserId();
+            $conn = $this->db->getConnection();
+            $query = "INSERT INTO wishlist (user_id, product_id) VALUES (?, ?)";
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param("ii", $user_id, $product_id);
+            $stmt->execute();
+        } else {
+            $wishlist = json_decode($_COOKIE['wishlist'], true);
+            if (!$wishlist) {
+                $wishlist = array();
+            }
+            $wishlist[] = $product_id;
+            setcookie("wishlist", json_encode($wishlist), time() + (86400 * 30), "/");
+        }
+    }
+
+    public function getUserWishlists() {
+        if ($this->login->isLoggedIn()) {
+            $user_id = $this->login->getUserId();
+            $conn = $this->db->getConnection();
+            $query = "SELECT product_id FROM wishlist WHERE user_id = ?";
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
+            $stmt->bind_result($product_id);
+            $wishlists = array();
+            while ($stmt->fetch()) {
+                $wishlists[] = $product_id;
+            }
+            return $wishlists;
+        } else {
+            return json_decode($_COOKIE['wishlist'], true);
+        }
+    }
+    public function removeWishlist($product_id) {
+        if ($this->login->isLoggedIn()) {
+            $user_id = $this->login->getUserId();
+            $conn = $this->db->getConnection();
+            $query = "DELETE FROM wishlist WHERE user_id = ? AND product_id = ?";
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param("ii", $user_id, $product_id);
+            $stmt->execute();
+        } else {
+            $wishlist = json_decode($_COOKIE['wishlist'], true);
+            if (!$wishlist) {
+                return;
+            }
+            $key = array_search($product_id, $wishlist);
+            unset($wishlist[$key]);
+            setcookie("wishlist", json_encode($wishlist), time() + (86400 * 30), "/");
+        }
+    }
+}    
