@@ -15,6 +15,14 @@ class SignUp {
         $query = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
         $stmt = $conn->prepare($query);
         $stmt->bind_param("sss", $username, $email, $password);
-        return $stmt->execute();
+       
+        if($stmt->execute()){
+            $_SESSION['user_id'] = $conn->insert_id;
+            return true;
+        
+         } else{
+
+            return false;
+        }
     }
 }

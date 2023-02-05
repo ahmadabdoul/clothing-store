@@ -96,6 +96,7 @@ $conn = $db->getConnection();
                     <nav class="header__menu mobile-menu">
                         <ul>
                             <li class="active"><a href="./index.php">Home</a></li>
+                            <li><a href="./wishlist.php">Wishlist</a></li>
                             
                             <li><a href="#">Pages</a>
                                 <ul class="dropdown">

@@ -20,6 +20,7 @@ class Wishlist {
             $stmt->bind_param("ii", $user_id, $product_id);
             $stmt->execute();
         } else {
+            //die(isset($_COOKIE['wishlist']));
             $wishlist = isset($_COOKIE['wishlist']) ? json_decode($_COOKIE['wishlist'], true) : array();
             $wishlist[] = $product_id;
             setcookie("wishlist", json_encode($wishlist), time() + (86400 * 30));
@@ -40,28 +41,54 @@ class Wishlist {
                 $wishlists[] = $product_id;
             }
             return $wishlists;
-        } else {
+        } else if(isset($_COOKIE['wishlist'])) {
             return json_decode($_COOKIE['wishlist'], true);
+        }
+        else{
+            return array();
         }
     }
     public function removeWishlist($product_id) {
+        if (!$this->isProductInWishlist($product_id)) {
+            return false;
+        }
         if ($this->login->isLoggedIn()) {
             $user_id = $this->login->getUserId();
             $conn = $this->db->getConnection();
             $query = "DELETE FROM wishlist WHERE user_id = ? AND product_id = ?";
             $stmt = $conn->prepare($query);
+            if (!$stmt) {
+                echo "Prepared statement error: " . $conn->error;
+                return false;
+            }
             $stmt->bind_param("ii", $user_id, $product_id);
-            $stmt->execute();
+            if (!$stmt->execute()) {
+                echo "Execute statement error: " . $stmt->error;
+                return false;
+            }
         } else {
             $wishlist = json_decode($_COOKIE['wishlist'], true);
             if (!$wishlist) {
-                return;
+                echo "Cookie 'wishlist' not found";
+                return false;
             }
             $key = array_search($product_id, $wishlist);
+            if ($key === false) {
+                echo "Product not found in cookie 'wishlist'";
+                return false;
+            }
+           // die($wishlist[$key]);
             unset($wishlist[$key]);
-            setcookie("wishlist", json_encode($wishlist), time() + (86400 * 30), "/");
+            //delete the cookie
+            setcookie("wishlist", "", time() - 3600);
+            //create the cookie again with the new value
+            setcookie("wishlist", json_encode($wishlist), time() + (86400 * 30));
+            
+            
         }
+        return true;
     }
+    
 
     public function isProductInWishlist($product_id) {
         if ($this->login->isLoggedIn()) {

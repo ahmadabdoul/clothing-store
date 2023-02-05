@@ -125,6 +125,10 @@ include_once 'classes/ShoppingCart.php';
                                             ?>
                                             <li><a href="add-to-wishlist.php?product=<?php echo $row['product_id']; ?>"><img src="img/icon/heart.png" alt=""></a></li>
                                       <?php
+                                        }else{
+                                            ?>
+                                            <li><a href="remove-wishlist.php?product=<?php echo $row['product_id']; ?>"><img src="img/icon/red-heart.png" alt=""></a></li>
+                                            <?php
                                         }
                                         ?>
                                         
@@ -134,7 +138,7 @@ include_once 'classes/ShoppingCart.php';
                                     <h6><?php echo $row['name']; ?></h6>
 
                                     <?php
-                                        if ($ShoppingCart->isProductInCart($row['product_id'])) {
+                                        if (!$ShoppingCart->isProductInCart($row['product_id'])) {
                                             ?>
                                             <a href="add-to-cart.php?product=<?php echo $row['product_id']; ?>" class="add-cart">+ Add To Cart</a>
                                             
@@ -142,7 +146,7 @@ include_once 'classes/ShoppingCart.php';
                                     
                                         } else {
                                             ?>
-                                            <a href="remove-from-cart.php?product=<?php echo $row['product_id']; ?>" class="add-cart">- Remove To Cart</a>
+                                            <a href="remove-from-cart.php?product=<?php echo $row['product_id']; ?>" class="add-cart">- Remove From Cart</a>
                                             <?php
                                         } ?>
                                     <h5>N<?php echo $row['price']; ?></h5>

@@ -10,4 +10,5 @@ $product_id = $_GET['product'];
 $wishlist = new Wishlist();
 $wishlist->removeWishlist($product_id);
 
-header("Location: index.php");
+$referrer = $_SERVER['HTTP_REFERER'];
+header("Location: $referrer");
